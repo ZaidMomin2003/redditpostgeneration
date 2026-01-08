@@ -1,0 +1,5 @@
+{
+  "name": "RedditInspo AI",
+  "description": "An AI-powered tool that analyzes top-performing Reddit posts from specific subreddits and generates high-value, non-promotional content ideas tailored to your specific app or product.",
+  "requestFramePermissions": []
+}
