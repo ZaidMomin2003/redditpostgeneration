@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { RedditPost, GeneratedContent, GenerationOptions } from "../types";
+import { RedditPost, GeneratedContent, GenerationOptions, AppType } from "../types";
 
 const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
@@ -8,20 +8,33 @@ const WISDOM_IS_FUN_CONTEXT = `
 Product: Wisdom is Fun
 Core Philosophy: "Topic to Mastery" - replacing passive reading with active engagement.
 Key Features:
-- WisdomGPT: 24/7 AI academic assistant tailoring "tricky" concepts into simplified, relatable explanations (e.g., humorous or laser-focused).
-- Ultra-Detailed Notes: Instantly structures prompts into scannable notes with definitions.
-- Interactive Flashcards: Active recall techniques from key concepts.
-- Custom Quizzes: Exam-mimicking assessments to highlight knowledge gaps.
-- Study Roadmaps: Day-by-day schedules built from uploaded syllabi/topics.
-- Capture Tool: Image-to-solution feature (snap a photo of a textbook page/problem).
-- Focus Mode: Built-in Pomodoro sessions for deep work.
-Subscription Model: Freemium (Free vs Unlimited Premium).
+- WisdomGPT: 24/7 AI academic assistant tailoring "tricky" concepts into simplified, relatable explanations.
+- Ultra-Detailed Notes: Instantly structures prompts into scannable notes.
+- Interactive Flashcards: Active recall techniques.
+- Custom Quizzes: Exam-mimicking assessments.
+- Study Roadmaps: Day-by-day schedules built from uploaded syllabi.
+- Capture Tool: Image-to-solution (snap photo of textbook page/problem).
+- Focus Mode: Built-in Pomodoro sessions.
+Subscription: Freemium (Free vs Unlimited Premium).
+`;
+
+const CLEAN_MAILS_CONTEXT = `
+Product: Verilist (Cleanmails by Talxify)
+Category: Email hygiene and deliverability optimization SaaS.
+Function: Pre-send quality control layer for email workflows.
+Key Features:
+- Email Validation: Syntax check, domain/mail server verification, disposable/temporary email detection.
+- List Cleaning & Normalization: Restructures messy datasets into campaign-ready lists.
+- Email Extractor: Pulls valid emails from unstructured text sources.
+- Spam Word Analysis: Refines copy to reduce spam filter triggers and improve inbox placement.
+Target Audience: Founders, marketers, agencies, outbound sales teams, and SaaS companies.
+Benefit: Protects sender reputation, reduces bounce rates, improves campaign performance.
 `;
 
 export const searchTopPosts = async (subreddit: string): Promise<RedditPost[]> => {
   const ai = getAI();
   const prompt = `Find the most popular, high-reach, and high-engagement recent posts from the r/${subreddit} subreddit. 
-  Focus on posts where students or lifelong learners are struggling with concepts, looking for study tools, or sharing productivity hacks. 
+  Focus on posts where users are discussing challenges relevant to either study productivity or email marketing/deliverability/data hygiene. 
   Return exactly 5 posts with their details.`;
 
   const response = await ai.models.generateContent({
@@ -64,24 +77,25 @@ export const generateInspiredPost = async (
   const ai = getAI();
   const lengthGuideline = options.contentLength === 'short' ? 'under 150 words' : options.contentLength === 'medium' ? 'around 300 words' : 'detailed, over 500 words';
   
+  const appContext = options.appType === 'wisdom' ? WISDOM_IS_FUN_CONTEXT : CLEAN_MAILS_CONTEXT;
+
   const prompt = `
     INSPIRATION POST:
     Title: ${originalPost.title}
     Subreddit: r/${originalPost.subreddit}
     Content Summary: ${originalPost.selftext}
 
-    FIXED PRODUCT CONTEXT (Wisdom is Fun):
-    ${WISDOM_IS_FUN_CONTEXT}
+    PRODUCT CONTEXT (${options.appType === 'wisdom' ? 'Wisdom is Fun' : 'Clean Mails'}):
+    ${appContext}
 
     GENERATION PARAMETERS:
-    - Promotional Level: ${options.promotionalLevel}/100. (0 = purely educational/helpful with zero mention or a tiny organic mention. 100 = clear product pitch).
+    - Promotional Level: ${options.promotionalLevel}/100. (0 = purely educational, 100 = direct pitch).
     - Content Length: ${lengthGuideline}.
-    - Subreddit Rules Adherence: ${options.followSubredditRules ? 'Strict - avoid spam, prioritize community guidelines' : 'Loose'}.
+    - Subreddit Rules Adherence: ${options.followSubredditRules ? 'Strict' : 'Loose'}.
 
     TASK:
     Write a high-value Reddit post for the r/${originalPost.subreddit} community.
-    Analyze the inspiration post for its "hook" and why it went viral (vulnerability, controversy, listicle, hack). 
-    Apply that same structure to solve a problem using the "Wisdom is Fun" feature set, but make it feel like a helpful community member posting.
+    Apply the viral hook and structure from the inspiration post to solve a problem using the features of the selected product.
 
     OUTPUT FORMAT:
     JSON only.
@@ -97,7 +111,7 @@ export const generateInspiredPost = async (
         properties: {
           newPostTitle: { type: Type.STRING },
           newPostBody: { type: Type.STRING },
-          strategyReasoning: { type: Type.STRING, description: "Detailed explanation of why this post will likely go viral based on the inspiration." }
+          strategyReasoning: { type: Type.STRING }
         },
         required: ["newPostTitle", "newPostBody", "strategyReasoning"]
       }
@@ -107,6 +121,7 @@ export const generateInspiredPost = async (
   return {
     originalPost,
     ...JSON.parse(response.text),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    appType: options.appType
   };
 };

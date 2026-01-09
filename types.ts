@@ -9,10 +9,13 @@ export interface RedditPost {
   subreddit: string;
 }
 
+export type AppType = 'wisdom' | 'clean_mails';
+
 export interface GenerationOptions {
   promotionalLevel: number; // 0 (Value Only) to 100 (High Promo)
   contentLength: 'short' | 'medium' | 'long';
   followSubredditRules: boolean;
+  appType: AppType;
 }
 
 export interface GeneratedContent {
@@ -21,6 +24,7 @@ export interface GeneratedContent {
   newPostBody: string;
   strategyReasoning: string;
   timestamp?: string;
+  appType: AppType;
 }
 
 export interface HistoryItem extends GeneratedContent {
