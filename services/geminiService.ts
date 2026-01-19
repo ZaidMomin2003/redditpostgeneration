@@ -62,7 +62,9 @@ export const searchTopPosts = async (subreddit: string): Promise<RedditPost[]> =
   });
 
   try {
-    return JSON.parse(response.text);
+    const text = response.text;
+    if (!text) return [];
+    return JSON.parse(text);
   } catch (e) {
     console.error("Failed to parse search results", e);
     return [];
@@ -119,9 +121,14 @@ export const generateInspiredPost = async (
     }
   });
 
+  const text = response.text;
+  if (!text) {
+    throw new Error("Model failed to generate a response text.");
+  }
+
   return {
     originalPost,
-    ...JSON.parse(response.text),
+    ...JSON.parse(text),
     timestamp: new Date().toISOString(),
     appType: options.appType
   };
