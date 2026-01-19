@@ -19,15 +19,22 @@ Subscription Tiers: Freemium model (Free Plan vs Premium Plan with unlimited gen
 `;
 
 const CLEAN_MAILS_CONTEXT = `
-Product: Verilist (Cleanmails by Talxify)
-Core Function: A comprehensive email hygiene and deliverability optimization SaaS designed as a pre-send quality control layer.
+Product: Cleanmails.online
+Category: Email hygiene and deliverability optimization SaaS.
+Function: AI-driven email warm-up and sender reputation management platform.
 Key Features:
-- Email Validation: Checks syntax accuracy, verifies domain and mail server existence, and identifies disposable, temporary, or invalid emails.
-- List Cleaning & Normalization: Restructures messy or unformatted datasets into clean, campaign-ready lists organized at scale.
-- Email Extractor: Pulls valid email addresses from unstructured text sources.
-- Spam Word Analysis: Refines email copy to reduce spam filter triggers and improve inbox placement.
+
+Verified Sender Network: Uses a network of verified clean senders to build sender reputation naturally and safely.
+
+ESP Deliverability Tracking: Real-time tracking of inbox placement and spam rates across major providers like Gmail and Outlook.
+
+Automated Spam Monitoring: Continuous monitoring of spam rates and sender performance to detect deliverability issues early.
+
+AI-Powered Warmup Emails: Generates contextual warm-up email content with AI to improve engagement and reputation.
+
+Warmup Scheduling & Control: Customizable sending schedules and ramp-up controls to match campaign needs.
 Target Audience: Founders, marketers, agencies, outbound sales teams, and SaaS companies.
-Core Value: Streamlines email data management, protects email infrastructure (sender reputation), and improves campaign performance by ensuring only high-quality data is used.
+Benefit: Protects sender reputation, improves inbox placement, and boosts overall email deliverability performance.
 `;
 
 export const searchTopPosts = async (subreddit: string): Promise<RedditPost[]> => {
