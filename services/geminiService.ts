@@ -8,40 +8,33 @@ const WISDOM_IS_FUN_CONTEXT = `
 Product: Wisdom is Fun
 Core Philosophy: "Topic to Mastery" - replacing passive reading with active engagement.
 Key Features:
-- WisdomGPT: 24/7 AI academic assistant tailoring "tricky" concepts into simplified, relatable explanations.
-- Ultra-Detailed Notes: Instantly structures prompts into scannable notes.
-- Interactive Flashcards: Active recall techniques.
-- Custom Quizzes: Exam-mimicking assessments.
-- Study Roadmaps: Day-by-day schedules built from uploaded syllabi.
-- Capture Tool: Image-to-solution (snap photo of textbook page/problem).
-- Focus Mode: Built-in Pomodoro sessions.
-Subscription: Freemium (Free vs Unlimited Premium).
+- WisdomGPT: 24/7 AI academic assistant tailoring "tricky" concepts into simplified, relatable explanations (e.g., humorous or laser-focused).
+- Ultra-Detailed Notes: Instantly structures a single prompt into scannable notes with definitions for key terms.
+- Interactive Flashcards: Uses active recall techniques by converting key concepts into digital cards.
+- Custom Quizzes: Generates assessments that mimic real exam conditions to highlight knowledge gaps.
+- Study Roadmaps: A powerful planning tool where users can upload a syllabus or topic, and the AI builds a day-by-day schedule.
+- Capture Tool: An image-to-solution feature for snapping photos of textbooks/problems.
+- Focus Mode: Includes built-in Pomodoro sessions.
+Subscription Tiers: Freemium model (Free Plan vs Premium Plan with unlimited generations, roadmaps, and priority support).
 `;
 
 const CLEAN_MAILS_CONTEXT = `
-Product: Cleanmails.online
-Category: Email hygiene and deliverability optimization SaaS.
-Function: AI-driven email warm-up and sender reputation management platform.
+Product: Verilist (Cleanmails by Talxify)
+Core Function: A comprehensive email hygiene and deliverability optimization SaaS designed as a pre-send quality control layer.
 Key Features:
-
-Verified Sender Network: Uses a network of verified clean senders to build sender reputation naturally and safely.
-
-ESP Deliverability Tracking: Real-time tracking of inbox placement and spam rates across major providers like Gmail and Outlook.
-
-Automated Spam Monitoring: Continuous monitoring of spam rates and sender performance to detect deliverability issues early.
-
-AI-Powered Warmup Emails: Generates contextual warm-up email content with AI to improve engagement and reputation.
-
-Warmup Scheduling & Control: Customizable sending schedules and ramp-up controls to match campaign needs.
+- Email Validation: Checks syntax accuracy, verifies domain and mail server existence, and identifies disposable, temporary, or invalid emails.
+- List Cleaning & Normalization: Restructures messy or unformatted datasets into clean, campaign-ready lists organized at scale.
+- Email Extractor: Pulls valid email addresses from unstructured text sources.
+- Spam Word Analysis: Refines email copy to reduce spam filter triggers and improve inbox placement.
 Target Audience: Founders, marketers, agencies, outbound sales teams, and SaaS companies.
-Benefit: Protects sender reputation, improves inbox placement, and boosts overall email deliverability performance.
+Core Value: Streamlines email data management, protects email infrastructure (sender reputation), and improves campaign performance by ensuring only high-quality data is used.
 `;
 
 export const searchTopPosts = async (subreddit: string): Promise<RedditPost[]> => {
   const ai = getAI();
   const prompt = `Find the most popular, high-reach, and high-engagement recent posts from the r/${subreddit} subreddit. 
-  Focus on posts where users are discussing challenges relevant to either study productivity or email marketing/deliverability/data hygiene. 
-  Return exactly 5 posts with their details.`;
+  Focus on posts where users are discussing challenges relevant to study productivity, academic success, email marketing, sender reputation, or lead generation. 
+  Return exactly 5 posts with their details in JSON format.`;
 
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
@@ -84,6 +77,7 @@ export const generateInspiredPost = async (
   const lengthGuideline = options.contentLength === 'short' ? 'under 150 words' : options.contentLength === 'medium' ? 'around 300 words' : 'detailed, over 500 words';
   
   const appContext = options.appType === 'wisdom' ? WISDOM_IS_FUN_CONTEXT : CLEAN_MAILS_CONTEXT;
+  const appName = options.appType === 'wisdom' ? 'Wisdom is Fun' : 'Verilist (Cleanmails by Talxify)';
 
   const prompt = `
     INSPIRATION POST:
@@ -91,17 +85,18 @@ export const generateInspiredPost = async (
     Subreddit: r/${originalPost.subreddit}
     Content Summary: ${originalPost.selftext}
 
-    PRODUCT CONTEXT (${options.appType === 'wisdom' ? 'Wisdom is Fun' : 'Clean Mails'}):
+    PRODUCT CONTEXT (${appName}):
     ${appContext}
 
     GENERATION PARAMETERS:
-    - Promotional Level: ${options.promotionalLevel}/100. (0 = purely educational, 100 = direct pitch).
+    - Promotional Level: ${options.promotionalLevel}/100.
     - Content Length: ${lengthGuideline}.
-    - Subreddit Rules Adherence: ${options.followSubredditRules ? 'Strict' : 'Loose'}.
+    - Subreddit Rules Adherence: ${options.followSubredditRules ? 'Strict (Community First)' : 'Moderate'}.
 
     TASK:
     Write a high-value Reddit post for the r/${originalPost.subreddit} community.
-    Apply the viral hook and structure from the inspiration post to solve a problem using the features of the selected product.
+    Mirror the viral structure of the inspiration post. If it was a "mistake I made," write a "mistake I made" regarding the product's domain.
+    Deliver real value so the post doesn't get removed.
 
     OUTPUT FORMAT:
     JSON only.

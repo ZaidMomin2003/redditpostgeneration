@@ -122,6 +122,13 @@ const App: React.FC = () => {
     setGenerated(null); // Clear result when switching apps to avoid confusion
   };
 
+  const shareToReddit = (title: string, body: string, subredditName: string) => {
+    const encodedTitle = encodeURIComponent(title);
+    const encodedBody = encodeURIComponent(body);
+    const url = `https://www.reddit.com/r/${subredditName}/submit?title=${encodedTitle}&text=${encodedBody}&selftext=true`;
+    window.open(url, '_blank');
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 pb-24">
       {/* Header */}
@@ -319,12 +326,21 @@ const App: React.FC = () => {
                 <div className="bg-gray-800/50 px-8 py-4 flex justify-between items-center border-b border-gray-800">
                   <div className="flex space-x-2"><div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div><div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div><div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div></div>
                   <span className="text-[10px] font-mono text-gray-500 uppercase font-black tracking-widest">{generated.appType === 'wisdom' ? 'wisdom_gen.md' : 'cleanmails_gen.md'}</span>
-                  <button 
-                    onClick={() => { navigator.clipboard.writeText(`${generated.newPostTitle}\n\n${generated.newPostBody}`); alert('Copied!'); }} 
-                    className={`text-[10px] px-4 py-2 rounded-lg font-black transition-all uppercase tracking-tighter ${generated.appType === 'wisdom' ? 'bg-orange-600/20 text-orange-400 hover:bg-orange-600/40' : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/40'}`}
-                  >
-                    Copy Content
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    <button 
+                      onClick={() => shareToReddit(generated.newPostTitle, generated.newPostBody, generated.originalPost.subreddit)} 
+                      className={`text-[10px] px-4 py-2 rounded-lg font-black transition-all uppercase tracking-tighter flex items-center space-x-2 ${generated.appType === 'wisdom' ? 'bg-orange-600/20 text-orange-400 hover:bg-orange-600/40' : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/40'}`}
+                    >
+                      <i className="fa-brands fa-reddit"></i>
+                      <span>Post to Reddit</span>
+                    </button>
+                    <button 
+                      onClick={() => { navigator.clipboard.writeText(`${generated.newPostTitle}\n\n${generated.newPostBody}`); alert('Copied!'); }} 
+                      className={`text-[10px] px-4 py-2 rounded-lg font-black transition-all uppercase tracking-tighter ${generated.appType === 'wisdom' ? 'bg-orange-600/20 text-orange-400 hover:bg-orange-600/40' : 'bg-blue-600/20 text-blue-400 hover:bg-blue-600/40'}`}
+                    >
+                      Copy Content
+                    </button>
+                  </div>
                 </div>
                 <div className="p-10 space-y-10">
                   <div className="space-y-4">
@@ -381,7 +397,19 @@ const App: React.FC = () => {
                   <h3 className="font-bold text-xl text-white mb-2 line-clamp-1 group-hover:text-gray-200 transition-colors">{item.newPostTitle}</h3>
                   <p className="text-gray-500 text-sm line-clamp-2 mb-4 leading-relaxed">{item.newPostBody}</p>
                   <div className="flex items-center justify-between pt-4 border-t border-gray-800/50">
-                    <span className="text-[10px] text-gray-700 font-bold uppercase tracking-widest">{new Date(item.timestamp || '').toLocaleDateString()}</span>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-[10px] text-gray-700 font-bold uppercase tracking-widest">{new Date(item.timestamp || '').toLocaleDateString()}</span>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          shareToReddit(item.newPostTitle, item.newPostBody, item.originalPost.subreddit);
+                        }}
+                        className="text-[10px] font-black text-gray-500 hover:text-orange-500 uppercase tracking-widest flex items-center space-x-1"
+                      >
+                        <i className="fa-brands fa-reddit text-xs"></i>
+                        <span>Share</span>
+                      </button>
+                    </div>
                     <span className={`text-[10px] font-black uppercase tracking-widest ${item.appType === 'wisdom' ? 'text-orange-600' : 'text-blue-600'}`}>
                       {item.appType === 'wisdom' ? 'Wisdom is Fun' : 'Clean Mails'}
                     </span>
