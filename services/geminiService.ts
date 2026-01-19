@@ -21,20 +21,19 @@ Subscription Tiers: Freemium model (Free Plan vs Premium Plan with unlimited gen
 const CLEAN_MAILS_CONTEXT = `
 Product: Cleanmails.online
 Category: Email hygiene and deliverability optimization SaaS.
-Function: AI-driven email warm-up and sender reputation management platform.
+Function: A suite of tools to validate, clean, extract, and prepare email data for sending, reducing bounces and protecting sender reputation.
+
 Key Features:
 
-Verified Sender Network: Uses a network of verified clean senders to build sender reputation naturally and safely.
+Email Validation: Checks syntax, verifies domains and mail servers, and removes disposable or invalid addresses to reduce bounce rates.
 
-ESP Deliverability Tracking: Real-time tracking of inbox placement and spam rates across major providers like Gmail and Outlook.
+List Cleaning & Normalization: Cleans messy datasets, restructures lists, and standardizes data for campaign use.
 
-Automated Spam Monitoring: Continuous monitoring of spam rates and sender performance to detect deliverability issues early.
+Email Extractor: Pulls valid email addresses from unstructured text sources like logs, documents, or scrape outputs.
 
-AI-Powered Warmup Emails: Generates contextual warm-up email content with AI to improve engagement and reputation.
+Spam Word Analysis: Scans content against common spam trigger words to improve deliverability before sending.
 
-Warmup Scheduling & Control: Customizable sending schedules and ramp-up controls to match campaign needs.
-Target Audience: Founders, marketers, agencies, outbound sales teams, and SaaS companies.
-Benefit: Protects sender reputation, improves inbox placement, and boosts overall email deliverability performance.
+Completely self hosted.
 `;
 
 export const searchTopPosts = async (subreddit: string): Promise<RedditPost[]> => {
